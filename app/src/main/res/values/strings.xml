@@ -8,4 +8,7 @@
     <string name="add">添加</string>
     <string name="navigation_drawer_open">打开</string>
     <string name="navigation_drawer_close">关闭</string>
+    <string name="add_a_note">添加记事</string>
+    <string name="title">准备做什么?</string>
+    <string name="content">描述</string>
 </resources>

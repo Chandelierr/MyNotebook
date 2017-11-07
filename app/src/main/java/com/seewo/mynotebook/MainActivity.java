@@ -1,6 +1,7 @@
 package com.seewo.mynotebook;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.seewo.mynotebook.presenter.MainPresenter;
 import com.seewo.mynotebook.utils.ShowToastUtil;
+import com.seewo.mynotebook.view.AddNoteActivity;
 import com.seewo.mynotebook.view.IMainView;
 
 public class MainActivity extends AppCompatActivity implements IMainView,
@@ -76,7 +78,9 @@ public class MainActivity extends AppCompatActivity implements IMainView,
                 ShowToastUtil.show(this, "点击了查询");
                 break;
             case R.id.toolbar_add:
-                ShowToastUtil.show(this, "点击了添加");
+                ShowToastUtil.show(this, "添加");
+                Intent intent = new Intent(this, AddNoteActivity.class);
+                startActivity(intent);
                 break;
             case R.id.action_item1:
                 ShowToastUtil.show(this, "点击了菜单1");
