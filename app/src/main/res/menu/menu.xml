@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/unclassified"
+            android:icon="@mipmap/unclassified"
+            android:title="@string/unclassified" />
+    </group>
+
+    <item android:title="@string/manage">
+        <menu>
+            <item
+                android:id="@+id/manage_groups"
+                android:icon="@mipmap/manage"
+                android:title="@string/manage_groups"/>
+        </menu>
+    </item>
+</menu>
