@@ -4,15 +4,14 @@
     android:id="@+id/activity_add_note"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.seewo.mynotebook.view.AddNoteActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.seewo.mynotebook.view.AddNoteActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/add_toolbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorLightGreen">
-    </android.support.v7.widget.Toolbar>
+        android:background="@color/colorLightGreen"></android.support.v7.widget.Toolbar>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -24,8 +23,14 @@
             android:id="@+id/select_group"
             android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/add_title">
-        </android.support.v7.widget.AppCompatSpinner>
+            android:layout_alignBaseline="@+id/add_title"></android.support.v7.widget.AppCompatSpinner>
+
+        <TextView
+            android:id="@+id/group_name"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/add_title"></TextView>
+
 
         <EditText
             android:id="@id/add_title"
@@ -35,14 +40,14 @@
             android:hint="@string/title"
             android:maxLines="1"
             android:maxWidth="100dp"
-            android:textSize="@dimen/text_size_18"/>
+            android:textSize="@dimen/text_size_18" />
     </RelativeLayout>
 
 
     <View
-        android:background="@color/colorDarkGrey"
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"/>
+        android:layout_height="0.5dp"
+        android:background="@color/colorDarkGrey" />
 
     <TextView
         android:id="@+id/add_time"
@@ -50,16 +55,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:paddingTop="@dimen/padding"
-        android:text="2017年11月7日 17:10"/>
+        android:text="2017年11月7日 17:10" />
 
-    <com.seewo.mynotebook.view.BeautyText
+    <EditText
         android:id="@+id/add_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_vertical_margin"
         android:layout_marginRight="@dimen/activity_vertical_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:hint="@string/content"/>
+        android:hint="@string/content"
+        android:paddingTop="@dimen/activity_vertical_margin" />
 
 
 </LinearLayout>

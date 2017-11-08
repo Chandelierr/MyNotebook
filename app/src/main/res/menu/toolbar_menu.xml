@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.seewo.mynotebook.MainActivity">
+    tools:context="com.seewo.mynotebook.view.MainActivity">
     <item
         android:id="@+id/toolbar_search"
         android:title="@string/search"
@@ -17,10 +17,10 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/action_item1"
-        android:title="按钮1"
+        android:title="1"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_item2"
-        android:title="按钮2"
+        android:title="2"
         app:showAsAction="never" />
 </menu>

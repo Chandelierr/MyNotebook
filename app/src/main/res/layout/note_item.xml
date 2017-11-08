@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/note_show_item"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/note_margin"
+    android:background="@drawable/note_show_background">
+    <TextView
+        android:id="@+id/note_show_title"
+        android:layout_width="@dimen/note_title_width"
+        android:layout_height="@dimen/note_title_height"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="@dimen/text_size_22"/>
+    <TextView
+        android:id="@+id/note_show_time"
+        android:layout_width="@dimen/note_title_width"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_13"/>
+    <TextView
+        android:id="@+id/note_show_content"
+        android:layout_width="@dimen/note_title_width"
+        android:layout_height="@dimen/note_content_height"
+        android:ellipsize="end"
+        android:textSize="@dimen/text_size_18"/>
+
+</LinearLayout>

@@ -11,4 +11,11 @@
     <string name="add_a_note">添加记事</string>
     <string name="title">准备做什么?</string>
     <string name="content">描述</string>
+    <string name="new_note">新建文本</string>
+    <string name="delete">删除</string>
+    <string name="confirm_delete">确认删除吗?</string>
+    <string name="delete_success">删除成功</string>
+    <string name="delete_failed">好像出了些问题</string>
+    <string name="yes">是的</string>
+    <string name="no">取消</string>
 </resources>
