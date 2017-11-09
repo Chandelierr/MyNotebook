@@ -8,6 +8,4 @@ import android.content.Context;
 
 public interface IAddNoteView {
     Context getAppContext();
-
-    void backToMain();
 }

@@ -3,18 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.seewo.mynotebook.view.MainActivity">
-    <item
+    <!--<item
         android:id="@+id/toolbar_search"
-        android:title="@string/search"
         android:icon="@mipmap/toolbar_search_darkgrey"
         android:orderInCategory="1"
-        app:showAsAction="always"/>
+        android:title="@string/search"
+        app:showAsAction="always" />-->
+
+    <span style="white-space:pre"></span>
+    <item
+        android:id="@+id/action_search"
+        android:icon="@mipmap/toolbar_search_darkgrey"
+        android:imeOptions="actionSearch"
+        android:inputType="textCapWords"
+        android:orderInCategory="1"
+        android:title="@string/search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always" />
     <item
         android:id="@+id/toolbar_add"
-        android:title="@string/add"
         android:icon="@mipmap/toolbar_add_darkgrey"
         android:orderInCategory="2"
-        app:showAsAction="always"/>
+        android:title="@string/add"
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_item1"
         android:title="1"

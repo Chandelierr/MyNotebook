@@ -3,6 +3,7 @@ package com.seewo.mynotebook.presenter;
 import android.util.Log;
 
 import com.seewo.mynotebook.adapter.NoteAdapter;
+import com.seewo.mynotebook.model.Group;
 import com.seewo.mynotebook.model.Note;
 import com.seewo.mynotebook.model.NotebookDB;
 import com.seewo.mynotebook.view.IMainView;
@@ -28,12 +29,12 @@ public class MainPresenter {
         mView = view;
     }
 
-    public void getNotes(String groupName) {
+    public void getNotes(Group group) {
         if (mNotes == null) {
             mNotes = new ArrayList<>();
         }
         mNotes.clear();
-        List<Note> data = NotebookDB.getInstance(mView.getAppContext()).loadNote(groupName);
+        List<Note> data = NotebookDB.getInstance(mView.getAppContext()).loadNote(group);
         if (data == null) {
             Log.d(TAG, "data == null ");
         } else {
@@ -61,5 +62,17 @@ public class MainPresenter {
 
     public boolean delete(int position) {
         return NotebookDB.getInstance(mView.getAppContext()).deleteNote(mNotes.get(position));
+    }
+
+    public Group loadDefaultGroup() {
+        return NotebookDB.getInstance(mView.getAppContext()).loadDefaultGroup();
+    }
+
+    public void queryByTitle(String query) {
+        List<Note> notes = new ArrayList<>();
+        notes = NotebookDB.getInstance(mView.getAppContext()).fuzzyQueryNote(query);
+        mNotes.clear();
+        mNotes.addAll(notes);
+        mAdapter.notifyDataSetChanged();
     }
 }

@@ -40,13 +40,24 @@ public class AddNoteActivity extends AppCompatActivity implements IAddNoteView {
     private AddNotePresenter mPresenter;
     private boolean mIsNew;
     private Note mNote;
+    private Group mCatGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
-        initView();
         initPresenter();
+        initData();
+        initView();
+    }
+
+    private void initData() {
+        int groupId = getIntent().getIntExtra(NotebookDBOpenHelper.GROUP_ID, -1);
+        int noteId = getIntent().getIntExtra(NotebookDBOpenHelper.NOTE_ID, -1);
+        if (groupId != -1 && noteId != -1) {
+            mCatGroup = mPresenter.loadCurGroup(groupId);
+            mNote = mPresenter.loadCurNote(noteId);
+        }
     }
 
     private void initPresenter() {
@@ -71,19 +82,19 @@ public class AddNoteActivity extends AppCompatActivity implements IAddNoteView {
         //区分 分组名称 新建是spinner， 编辑是textview
 
 
-        mGroupNameTv = (TextView)findViewById(R.id.group_name);
+        mGroupNameTv = (TextView) findViewById(R.id.group_name);
         mSelectGroupSpinner = (Spinner) findViewById(R.id.select_group);
 
         judgeIsNew();
     }
 
     private void judgeIsNew() {
-        mNote = (Note) getIntent().getSerializableExtra(MainActivity.OPEN_NOTE);
+        Log.d(TAG, "judge is new |||| note == null ? " + (mNote == null));
         if (mNote != null) {
             mIsNew = false;
             mGroupNameTv.setVisibility(View.VISIBLE);
             mSelectGroupSpinner.setVisibility(View.INVISIBLE);
-            mGroupNameTv.setText(mNote.getGroup());
+            mGroupNameTv.setText(mCatGroup.getName());
             mAddTitleEd.setText(mNote.getTitle());
             mAddContentEd.setText(mNote.getContent());
             mAddTimeTv.setText(mNote.getTime());
@@ -92,8 +103,7 @@ public class AddNoteActivity extends AppCompatActivity implements IAddNoteView {
             if (mGroupList == null) {
                 mGroupList = new ArrayList<Group>();
             }
-            mGroupList.add(new Group("未分组"));
-            mGroupList.add(new Group("学习"));
+            mGroupList = mPresenter.loadGroups();
             ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.group_name, mGroupList);
             arrayAdapter.setDropDownViewResource(R.layout.group_name);
             mSelectGroupSpinner.setAdapter(arrayAdapter);
@@ -105,24 +115,23 @@ public class AddNoteActivity extends AppCompatActivity implements IAddNoteView {
 
     private void dealNote() {
         Log.d(TAG, "deal note.");
+        boolean isSuccess;
         if (mIsNew) {
-            mPresenter.insert(mSelectGroupSpinner.getSelectedItem().toString(),
+            isSuccess = mPresenter.insert(mSelectGroupSpinner.getSelectedItem().toString(),
                     mAddTitleEd.getText().toString(),
                     mAddContentEd.getText().toString());
         } else {
             mNote.setTitle(mAddTitleEd.getText().toString());
             mNote.setContent(mAddContentEd.getText().toString());
-            mPresenter.update(mNote);
+            isSuccess = mPresenter.update(mNote);
+        }
+        if (isSuccess) {
+            finish();
         }
     }
 
     @Override
     public Context getAppContext() {
         return this.getApplicationContext();
-    }
-
-    @Override
-    public void backToMain() {
-        finish();
     }
 }

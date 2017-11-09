@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class Note implements Serializable{
 
     private int mId;
-    private String mGroup;
+    //private String mGroup;
     private String mTitle;
     private String mTime;
     private String mContent;
@@ -19,16 +19,16 @@ public class Note implements Serializable{
     public Note() {
     }
 
-    public Note(String group, String title, String time, String content) {
-        mGroup = group;
+    public Note(String title, String time, String content) {
+        //mGroup = group;
         mTitle = title;
         mTime = time;
         mContent = content;
     }
 
-    public String getGroup() {
-        return mGroup.toString();
-    }
+//    public String getGroup() {
+//        return mGroup.toString();
+//    }
 
     public String getTitle() {
         return mTitle;
@@ -50,9 +50,9 @@ public class Note implements Serializable{
         mId = id;
     }
 
-    public void setGroup(String group) {
-        mGroup = group;
-    }
+//    public void setGroup(String group) {
+//        mGroup = group;
+//    }
 
     public void setTitle(String title) {
         mTitle = title;

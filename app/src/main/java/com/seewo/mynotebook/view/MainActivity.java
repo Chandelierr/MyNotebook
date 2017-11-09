@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -17,8 +18,10 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +31,7 @@ import android.widget.Toast;
 
 import com.seewo.mynotebook.R;
 import com.seewo.mynotebook.adapter.NoteAdapter;
+import com.seewo.mynotebook.model.Group;
 import com.seewo.mynotebook.model.Note;
 import com.seewo.mynotebook.model.NotebookDBOpenHelper;
 import com.seewo.mynotebook.presenter.MainPresenter;
@@ -41,12 +45,13 @@ import com.seewo.mynotebook.view.IMainView;
  * @module 主activity
  */
 public class MainActivity extends AppCompatActivity implements IMainView,
-        NavigationView.OnNavigationItemSelectedListener, NoteAdapter.OnItemClickListener {
+        NavigationView.OnNavigationItemSelectedListener, NoteAdapter.OnItemClickListener, SearchView.OnQueryTextListener {
     private static final String TAG = "MainActivity";
     private static final int FROM_ADD = 1;
     public static final String OPEN_NOTE = "open_note";
 
     private MainPresenter mPresenter;
+    private Group mCurGroup;
 
     private DrawerLayout mActivityMain;
     private NavigationView mSelectNv;
@@ -57,14 +62,17 @@ public class MainActivity extends AppCompatActivity implements IMainView,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
         initPresenter();
+        initData();
+        initView();
+    }
+
+    private void initData() {
+        mCurGroup = mPresenter.loadDefaultGroup();
     }
 
     private void initPresenter() {
         mPresenter = new MainPresenter(this);
-        Log.d(TAG, "toolbar title: " + mTopToolbar.getTitle().toString());
-        refreshView();
     }
 
     private void initView() {
@@ -75,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements IMainView,
 
         mTopToolbar = (Toolbar) findViewById(R.id.top_toolbar);
         mTopToolbar.setNavigationIcon(R.mipmap.menu_darkgrey);
-        mTopToolbar.setTitle(R.string.unclassified);
+        mTopToolbar.setTitle(mCurGroup.getName());
         mTopToolbar.setTitleTextColor(getResources().getColor(R.color.colorDarkGrey));
         mTopToolbar.setOnCreateContextMenuListener(this);
 
@@ -92,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements IMainView,
                 this, mActivityMain, mTopToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mActivityMain.setDrawerListener(toggle);
         toggle.syncState();
+
+        refreshView();
     }
 
     @Override
@@ -103,25 +113,30 @@ public class MainActivity extends AppCompatActivity implements IMainView,
     }
 
     private void refreshView() {
+        Log.d(TAG, "refresh view.");
         if (mPresenter == null) {
             ShowToastUtil.show(this, "presenter is null.");
             Log.e(TAG, "presenter is null.");
             return;
         }
-        mPresenter.getNotes(mTopToolbar.getTitle().toString());
+        mPresenter.getNotes(mCurGroup);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        SearchView searchView= (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setOnQueryTextListener(this);
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setQueryHint(getResources().getString(R.string.find));
+        searchView.setIconifiedByDefault(true);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.toolbar_search:
-                break;
             case R.id.toolbar_add:
                 ShowToastUtil.show(this, "add");
                 Intent intent = new Intent(this, AddNoteActivity.class);
@@ -166,7 +181,8 @@ public class MainActivity extends AppCompatActivity implements IMainView,
         Log.d(TAG, "click " + position);
         Intent intent = new Intent(this, AddNoteActivity.class);
         Note note = mPresenter.getNote(position);
-        intent.putExtra(OPEN_NOTE, note);
+        intent.putExtra(NotebookDBOpenHelper.GROUP_ID, mCurGroup.getId());
+        intent.putExtra(NotebookDBOpenHelper.NOTE_ID, note.getId());
         startActivityForResult(intent, FROM_ADD);
     }
 
@@ -198,5 +214,21 @@ public class MainActivity extends AppCompatActivity implements IMainView,
                         }
                 });
         builder.create().show();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.d(TAG, "onQueryTextSubmit: " + query);
+        mPresenter.queryByTitle(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Log.d(TAG, "onQueryTextChange: " + newText);
+        if (TextUtils.isEmpty(newText)) {
+            refreshView();
+        }
+        return false;
     }
 }

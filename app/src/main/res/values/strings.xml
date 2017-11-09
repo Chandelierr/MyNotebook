@@ -18,4 +18,5 @@
     <string name="delete_failed">好像出了些问题</string>
     <string name="yes">是的</string>
     <string name="no">取消</string>
+    <string name="find"></string>
 </resources>
