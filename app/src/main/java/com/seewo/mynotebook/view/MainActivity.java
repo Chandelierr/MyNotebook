@@ -1,11 +1,8 @@
 package com.seewo.mynotebook.view;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
@@ -15,8 +12,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -26,8 +21,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.Toast;
 
 import com.seewo.mynotebook.R;
 import com.seewo.mynotebook.adapter.NoteAdapter;
@@ -36,8 +29,6 @@ import com.seewo.mynotebook.model.Note;
 import com.seewo.mynotebook.model.NotebookDBOpenHelper;
 import com.seewo.mynotebook.presenter.MainPresenter;
 import com.seewo.mynotebook.utils.ShowToastUtil;
-import com.seewo.mynotebook.view.AddNoteActivity;
-import com.seewo.mynotebook.view.IMainView;
 
 /**
  * Created by 王梦洁 on 2017/11/7.
@@ -45,10 +36,12 @@ import com.seewo.mynotebook.view.IMainView;
  * @module 主activity
  */
 public class MainActivity extends AppCompatActivity implements IMainView,
-        NavigationView.OnNavigationItemSelectedListener, NoteAdapter.OnItemClickListener, SearchView.OnQueryTextListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        NoteAdapter.OnItemClickListener,
+        SearchView.OnQueryTextListener {
     private static final String TAG = "MainActivity";
     private static final int FROM_ADD = 1;
-    public static final String OPEN_NOTE = "open_note";
+    public static final int FROM_MANAGE = 2;
 
     private MainPresenter mPresenter;
     private Group mCurGroup;
@@ -124,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements IMainView,
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        getMenuInflater().inflate(R.menu.main_toolbar_menu, menu);
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView= (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setOnQueryTextListener(this);
@@ -160,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements IMainView,
                 break;
             case R.id.manage_groups:
                 Log.d(TAG, "manage groups selected");
+                Intent intent = new Intent(this, ManageGroupsActivity.class);
+                startActivityForResult(intent, FROM_MANAGE);
                 break;
         }
         return false;

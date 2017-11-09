@@ -10,7 +10,7 @@
         android:title="@string/search"
         app:showAsAction="always" />-->
 
-    <span style="white-space:pre"></span>
+    <!--<span style="white-space:pre"></span>-->
     <item
         android:id="@+id/action_search"
         android:icon="@mipmap/toolbar_search_darkgrey"
