@@ -79,13 +79,15 @@ public class NotebookDB {
      *
      * @param group
      */
-    public void insertGroup(Group group) {
+    public boolean insertGroup(Group group) {
+        Log.d(TAG, "insert a group.");
+        boolean isSuccess = false;
         if (group != null) {
             ContentValues cv = new ContentValues();
             cv.put(GROUP_NAME, group.getName());
-            //cv.put(GROUP_CONTAINS_COUNT, group.getCount());
-            mDatabase.insert(GROUP_TABLE, null, cv);
+            return mDatabase.insert(GROUP_TABLE, null, cv) != -1;
         }
+        return isSuccess;
     }
 
     /**
@@ -337,7 +339,7 @@ public class NotebookDB {
      * @param query
      * @return
      */
-    public List<Note> fuzzyQueryNote(String query) {
+    public List<Note> fuzzyQueryNote(int groupId, String query) {
         List<Note> notes = new ArrayList<>();
         Cursor cursor = mDatabase.query(NOTE_TABLE, null, NOTE_TITLE_NAME + " like ?",
                 new String[]{query+"%"}, null, null, null);
@@ -354,6 +356,22 @@ public class NotebookDB {
         }
         if (cursor != null) {
             cursor.close();
+        }
+
+        Cursor cursorNoteIdByGroupId = mDatabase.query(GROUP_NOTE_TABLE, null, GROUP_MAP_ID + "!=?",
+                new String[]{groupId + ""}, null, null, null);
+        if (cursorNoteIdByGroupId != null && cursorNoteIdByGroupId.moveToFirst()) {
+            do {
+                int id = cursorNoteIdByGroupId.getInt(cursorNoteIdByGroupId.getColumnIndex(NOTE_MAP_ID));
+                for (int i = 0; i < notes.size(); i++) {
+                    if (notes.get(i).getId() == id) {
+                        notes.remove(i);
+                    }
+                }
+            } while (cursorNoteIdByGroupId.moveToNext());
+        }
+        if (cursorNoteIdByGroupId != null) {
+            cursorNoteIdByGroupId.close();
         }
         return notes;
     }

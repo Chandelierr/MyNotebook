@@ -24,6 +24,7 @@ public class MainPresenter {
     private NoteAdapter mAdapter;
 
     public List<Note> mNotes;
+    public List<Group> mGroups;
 
     public MainPresenter(IMainView view) {
         mView = view;
@@ -68,11 +69,23 @@ public class MainPresenter {
         return NotebookDB.getInstance(mView.getAppContext()).loadDefaultGroup();
     }
 
-    public void queryByTitle(String query) {
+    public void queryByTitle(int groupId, String query) {
         List<Note> notes = new ArrayList<>();
-        notes = NotebookDB.getInstance(mView.getAppContext()).fuzzyQueryNote(query);
+        notes = NotebookDB.getInstance(mView.getAppContext()).fuzzyQueryNote(groupId, query);
         mNotes.clear();
         mNotes.addAll(notes);
         mAdapter.notifyDataSetChanged();
+    }
+
+    public List<Group> loadGroups() {
+        if (mGroups == null) {
+            mGroups = new ArrayList<>();
+        }
+        mGroups.clear();
+        mGroups.addAll(NotebookDB.getInstance(mView.getAppContext()).loadGroup());
+        for (Group group : mGroups) {
+            Log.d(TAG, "group id: " + group.getId() + "\n group name: " + group.getName());
+        }
+        return mGroups;
     }
 }

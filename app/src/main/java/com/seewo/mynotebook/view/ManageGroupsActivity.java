@@ -1,8 +1,10 @@
 package com.seewo.mynotebook.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,9 +12,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 import com.seewo.mynotebook.R;
 import com.seewo.mynotebook.adapter.GroupAdapter;
@@ -32,7 +36,6 @@ public class ManageGroupsActivity extends AppCompatActivity
     private ManageGroupsPresenter mPresenter;
     private List<Group> mGroups;
 
-    private View mActivityManage;
     private Toolbar mManageToolbar;
     private RecyclerView mGroupsRv;
 
@@ -88,10 +91,48 @@ public class ManageGroupsActivity extends AppCompatActivity
         switch (item.getItemId()){
             case R.id.manage_toolbar_add:
                 ShowToastUtil.show(this, "add");
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.please_input_group_name);
+                View view = LayoutInflater.from(this).inflate(R.layout.dialog_edittext, null);
+                builder.setView(view);
+                final EditText groupNameEt = (EditText)view.findViewById(R.id.input_group_name);
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        String groupName = groupNameEt.getText().toString().trim();
+                        if (mPresenter.insertGroup(groupName)) {
+                            ShowToastUtil.show(getAppContext(),
+                                    getResources().getString(R.string.insert_success));
+                            refreshView();
+                        } else {
+                            ShowToastUtil.show(getAppContext(),
+                                    getResources().getString(R.string.delete_failed));
+                        }
+                    }
+                });
+                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
                 break;
             default:break;
         }
         return true;
+    }
+
+    private void refreshView() {
+        Log.d(TAG, "refresh view.");
+        if (mPresenter == null) {
+            ShowToastUtil.show(this, "presenter is null.");
+            Log.e(TAG, "presenter is null.");
+            return;
+        }
+        mPresenter.loadGroups();
     }
 
     @Override
@@ -103,7 +144,6 @@ public class ManageGroupsActivity extends AppCompatActivity
     public void setAdapter(GroupAdapter adapter) {
         mGroupsRv.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
-
     }
 
     @Override
@@ -114,5 +154,7 @@ public class ManageGroupsActivity extends AppCompatActivity
     @Override
     public void onItemLongClick(View view, int position) {
         Log.d(TAG, "long click " + position);
+        mPresenter.deleteGroup(position);
+        refreshView();
     }
 }

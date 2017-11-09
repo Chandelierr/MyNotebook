@@ -11,6 +11,15 @@ public class Group {
 
     public Group(){}
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Group) {
+            Group group = (Group)obj;
+            return group.getId() == this.getId() && group.getName().equals(this.getName());
+        }
+        return false;
+    }
+
     public Group(String name) {
         mName = name;
     }

@@ -10,6 +10,7 @@
     <dimen name="note_title_height">40dp</dimen>
     <dimen name="note_content_height">25dp</dimen>
     <dimen name="dimen_50dp">50dp</dimen>
+    <dimen name="dimen_40dp">40dp</dimen>
     <dimen name="note_time_width">200dp</dimen>
     <dimen name="note_margin">3dp</dimen>
 

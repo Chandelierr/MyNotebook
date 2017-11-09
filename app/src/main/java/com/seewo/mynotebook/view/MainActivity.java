@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,6 +31,9 @@ import com.seewo.mynotebook.model.NotebookDBOpenHelper;
 import com.seewo.mynotebook.presenter.MainPresenter;
 import com.seewo.mynotebook.utils.ShowToastUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by 王梦洁 on 2017/11/7.
  *
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements IMainView,
 
     private MainPresenter mPresenter;
     private Group mCurGroup;
+    private List<Group> mGroups;
 
     private DrawerLayout mActivityMain;
     private NavigationView mSelectNv;
@@ -62,6 +67,10 @@ public class MainActivity extends AppCompatActivity implements IMainView,
 
     private void initData() {
         mCurGroup = mPresenter.loadDefaultGroup();
+        if (mGroups == null) {
+            mGroups = new ArrayList<>();
+        }
+        mGroups = mPresenter.loadGroups();
     }
 
     private void initPresenter() {
@@ -69,10 +78,11 @@ public class MainActivity extends AppCompatActivity implements IMainView,
     }
 
     private void initView() {
-        mActivityMain = (DrawerLayout)findViewById(R.id.activity_main);
+        mActivityMain = (DrawerLayout) findViewById(R.id.activity_main);
 
-        mSelectNv = (NavigationView)findViewById(R.id.select_nv);
+        mSelectNv = (NavigationView) findViewById(R.id.select_nv);
         mSelectNv.setNavigationItemSelectedListener(this);
+        loadNavigationGroups();
 
         mTopToolbar = (Toolbar) findViewById(R.id.top_toolbar);
         mTopToolbar.setNavigationIcon(R.mipmap.menu_darkgrey);
@@ -93,14 +103,21 @@ public class MainActivity extends AppCompatActivity implements IMainView,
                 this, mActivityMain, mTopToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mActivityMain.setDrawerListener(toggle);
         toggle.syncState();
-
         refreshView();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "result code: " + resultCode);
         if (requestCode == FROM_ADD) {
             refreshView();
+        } else if (requestCode == FROM_MANAGE && resultCode == 0) {
+            mGroups = mPresenter.loadGroups();
+            Log.d(TAG, "神经病");
+            for (Group group : mGroups) {
+                Log.d(TAG, "group id: " + group.getId() + "\n group name: " + group.getName());
+            }
+            loadNavigationGroups();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -115,11 +132,27 @@ public class MainActivity extends AppCompatActivity implements IMainView,
         mPresenter.getNotes(mCurGroup);
     }
 
+    private void loadNavigationGroups() {
+        mSelectNv.getMenu().removeGroup(R.id.all_groups);
+        int i;
+        for (i = 0; i < mGroups.size(); i++) {
+            if (mGroups.get(i).getId() == 1) {
+                mSelectNv.getMenu().add(R.id.all_groups, mGroups.get(i).getId(), 1, mGroups.get(i).getName());
+            } else {
+                mSelectNv.getMenu().add(R.id.all_groups, mGroups.get(i).getId(), 2, mGroups.get(i).getName());
+            }
+            mSelectNv.getMenu().getItem(i).setIcon(R.mipmap.unclassified);
+        }
+        if (i == mGroups.size()) {
+            mSelectNv.getMenu().getItem(i).setIcon(R.mipmap.unclassified);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_toolbar_menu, menu);
         MenuItem menuItem = menu.findItem(R.id.action_search);
-        SearchView searchView= (SearchView) MenuItemCompat.getActionView(menuItem);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setOnQueryTextListener(this);
         searchView.setSubmitButtonEnabled(true);
         searchView.setQueryHint(getResources().getString(R.string.find));
@@ -129,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements IMainView,
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.toolbar_add:
                 ShowToastUtil.show(this, "add");
                 Intent intent = new Intent(this, AddNoteActivity.class);
@@ -139,7 +172,8 @@ public class MainActivity extends AppCompatActivity implements IMainView,
                 break;
             case R.id.action_item2:
                 break;
-            default:break;
+            default:
+                break;
         }
         return true;
     }
@@ -147,15 +181,21 @@ public class MainActivity extends AppCompatActivity implements IMainView,
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case R.id.unclassified:
-                Log.d(TAG, "unclassified selected");
-                break;
-            case R.id.manage_groups:
+        if (id ==  R.id.manage_groups){
                 Log.d(TAG, "manage groups selected");
                 Intent intent = new Intent(this, ManageGroupsActivity.class);
                 startActivityForResult(intent, FROM_MANAGE);
-                break;
+        } else {
+            Group group = new Group();
+            group.setId(item.getItemId());
+            group.setName(item.getTitle().toString());
+            mPresenter.getNotes(group);
+            //更新标题
+            mCurGroup = group;
+            mTopToolbar.setTitle(group.getName());
+            if (mActivityMain.isDrawerOpen(GravityCompat.START)) {
+                mActivityMain.closeDrawer(GravityCompat.START);
+            }
         }
         return false;
     }
@@ -192,29 +232,29 @@ public class MainActivity extends AppCompatActivity implements IMainView,
                             public void onClick(DialogInterface arg0, int arg1) {
                                 arg0.dismiss();
                             }
-                })
+                        })
                 .setPositiveButton(getResources().getString(R.string.yes),
                         new DialogInterface.OnClickListener() {
 
-                        @Override
-                        public void onClick(DialogInterface arg0, int arg1) {
-                            if (mPresenter.delete(position)) {
-                                refreshView();
-                                ShowToastUtil.show(getAppContext(),
-                                        getResources().getString(R.string.delete_success));
-                            } else {
-                                ShowToastUtil.show(getAppContext(),
-                                        getResources().getString(R.string.delete_failed));
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                if (mPresenter.delete(position)) {
+                                    refreshView();
+                                    ShowToastUtil.show(getAppContext(),
+                                            getResources().getString(R.string.delete_success));
+                                } else {
+                                    ShowToastUtil.show(getAppContext(),
+                                            getResources().getString(R.string.delete_failed));
+                                }
                             }
-                        }
-                });
+                        });
         builder.create().show();
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
         Log.d(TAG, "onQueryTextSubmit: " + query);
-        mPresenter.queryByTitle(query);
+        mPresenter.queryByTitle(mCurGroup.getId(), query);
         return false;
     }
 

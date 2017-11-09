@@ -1,7 +1,10 @@
 package com.seewo.mynotebook.presenter;
 
+import android.util.Log;
+
 import com.seewo.mynotebook.adapter.GroupAdapter;
 import com.seewo.mynotebook.model.Group;
+import com.seewo.mynotebook.model.Note;
 import com.seewo.mynotebook.model.NotebookDB;
 import com.seewo.mynotebook.view.IManageView;
 
@@ -29,6 +32,7 @@ public class ManageGroupsPresenter {
         if (mGroups == null) {
             mGroups = new ArrayList<>();
         }
+        mGroups.clear();
         mGroups.addAll(NotebookDB.getInstance(mView.getAppContext()).loadGroup());
         prepareAdapter();
         return mGroups;
@@ -40,5 +44,16 @@ public class ManageGroupsPresenter {
             mView.setAdapter(mAdapter);
         }
         mAdapter.notifyDataSetChanged();
+    }
+
+    public boolean insertGroup(String groupName) {
+        Group group = new Group(groupName);
+        return NotebookDB.getInstance(mView.getAppContext()).insertGroup(group);
+    }
+
+    public void deleteGroup(int position) {
+        Group group = mGroups.get(position);
+        Log.d(TAG, "delete group:" + group.getName());
+        NotebookDB.getInstance(mView.getAppContext()).deleteGroup(group);
     }
 }
