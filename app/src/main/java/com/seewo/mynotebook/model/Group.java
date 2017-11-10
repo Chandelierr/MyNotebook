@@ -1,13 +1,12 @@
 package com.seewo.mynotebook.model;
 
 /**
- * Created by user on 2017/11/7.
+ * Created by 王梦洁 on 2017/11/7.
  */
 
 public class Group {
     private int mId;
     private String mName;
-    //private int mCount;
 
     public Group(){}
 
@@ -36,14 +35,6 @@ public class Group {
     public void setName(String name) {
         mName = name;
     }
-
-//    public int getCount() {
-//        return mCount;
-//    }
-//
-//    public void setCount(int count) {
-//        mCount = count;
-//    }
 
     public int getId() {
         return mId;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_add_note"
     android:layout_width="match_parent"
@@ -14,8 +14,10 @@
         android:background="@color/colorLightGreen"></android.support.v7.widget.Toolbar>
 
     <RelativeLayout
+        android:id="@+id/title_and_group"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_below="@id/add_toolbar"
         android:layout_marginLeft="@dimen/activity_vertical_margin"
         android:layout_marginRight="@dimen/activity_vertical_margin">
 
@@ -45,26 +47,93 @@
 
 
     <View
+        android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
+        android:layout_below="@id/title_and_group"
         android:background="@color/colorDarkGrey" />
 
     <TextView
         android:id="@+id/add_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_below="@id/divider"
+        android:layout_centerHorizontal="true"
         android:paddingTop="@dimen/padding"
-        android:text="2017年11月7日 17:10" />
+        android:text="2017-11-7 17:10" />
 
-    <EditText
-        android:id="@+id/add_content"
+    <HorizontalScrollView
+        android:id="@+id/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:layout_marginRight="@dimen/activity_vertical_margin"
-        android:hint="@string/content"
-        android:paddingTop="@dimen/activity_vertical_margin" />
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorLightGreen"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dimen_5dp"
+            android:divider="@color/colorWhite"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/bold"
+                android:layout_width="@dimen/dimen_35dp"
+                android:layout_height="@dimen/dimen_35dp"
+                android:layout_marginLeft="@dimen/dimen_5dp"
+                android:layout_marginRight="@dimen/dimen_5dp"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_format_bold"/>
+
+            <ImageButton
+                android:id="@+id/italic"
+                android:layout_width="@dimen/dimen_35dp"
+                android:layout_height="@dimen/dimen_35dp"
+                android:layout_marginLeft="@dimen/dimen_5dp"
+                android:layout_marginRight="@dimen/dimen_5dp"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_format_italic"/>
+
+            <ImageButton
+                android:id="@+id/underline"
+                android:layout_width="@dimen/dimen_35dp"
+                android:layout_height="@dimen/dimen_35dp"
+                android:layout_marginLeft="@dimen/dimen_5dp"
+                android:layout_marginRight="@dimen/dimen_5dp"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_format_underline"/>
+
+            <ImageButton
+                android:id="@+id/strike_through"
+                android:layout_width="@dimen/dimen_35dp"
+                android:layout_height="@dimen/dimen_35dp"
+                android:layout_marginLeft="@dimen/dimen_5dp"
+                android:layout_marginRight="@dimen/dimen_5dp"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_format_strikethrough"/>
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <com.seewo.mynotebook.view.editor.BeautyText
+        android:id="@+id/beauty_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/tools"
+        android:layout_below="@id/add_time"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:scrollbars="vertical"/>
 
 
-</LinearLayout>
+</RelativeLayout>

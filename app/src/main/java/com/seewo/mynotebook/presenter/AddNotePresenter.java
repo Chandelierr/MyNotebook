@@ -6,7 +6,7 @@ import com.seewo.mynotebook.R;
 import com.seewo.mynotebook.model.Group;
 import com.seewo.mynotebook.model.Note;
 import com.seewo.mynotebook.model.NotebookDB;
-import com.seewo.mynotebook.view.IAddNoteView;
+import com.seewo.mynotebook.view.IView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,9 +20,9 @@ import java.util.List;
 
 public class AddNotePresenter {
     private static final String TAG = "AddNotePresenter";
-    private IAddNoteView mView;
+    private IView mView;
 
-    public AddNotePresenter(IAddNoteView view) {
+    public AddNotePresenter(IView view) {
         mView = view;
     }
 

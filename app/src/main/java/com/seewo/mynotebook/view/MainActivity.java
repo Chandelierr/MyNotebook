@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @module 主activity
  */
-public class MainActivity extends AppCompatActivity implements IMainView,
+public class MainActivity extends AppCompatActivity implements IView,
         NavigationView.OnNavigationItemSelectedListener,
         NoteAdapter.OnItemClickListener,
         SearchView.OnQueryTextListener {
@@ -65,16 +65,18 @@ public class MainActivity extends AppCompatActivity implements IMainView,
         initView();
     }
 
+    //init============================================================================
+
+    private void initPresenter() {
+        mPresenter = new MainPresenter(this);
+    }
+
     private void initData() {
         mCurGroup = mPresenter.loadDefaultGroup();
         if (mGroups == null) {
             mGroups = new ArrayList<>();
         }
-        mGroups = mPresenter.loadGroups();
-    }
-
-    private void initPresenter() {
-        mPresenter = new MainPresenter(this);
+        mGroups = mPresenter.loadAllGroup();
     }
 
     private void initView() {
@@ -106,14 +108,25 @@ public class MainActivity extends AppCompatActivity implements IMainView,
         refreshView();
     }
 
+    private void refreshView() {
+        Log.d(TAG, "refresh view.");
+        if (mPresenter == null) {
+            ShowToastUtil.show(this, "presenter is null.");
+            Log.e(TAG, "presenter is null.");
+            return;
+        }
+        mPresenter.loadNotesByGroup(mCurGroup);
+    }
+
+    //override myself=====================================================================
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "result code: " + resultCode);
         if (requestCode == FROM_ADD) {
             refreshView();
         } else if (requestCode == FROM_MANAGE && resultCode == 0) {
-            mGroups = mPresenter.loadGroups();
-            Log.d(TAG, "神经病");
+            mGroups = mPresenter.loadAllGroup();
             for (Group group : mGroups) {
                 Log.d(TAG, "group id: " + group.getId() + "\n group name: " + group.getName());
             }
@@ -122,31 +135,8 @@ public class MainActivity extends AppCompatActivity implements IMainView,
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void refreshView() {
-        Log.d(TAG, "refresh view.");
-        if (mPresenter == null) {
-            ShowToastUtil.show(this, "presenter is null.");
-            Log.e(TAG, "presenter is null.");
-            return;
-        }
-        mPresenter.getNotes(mCurGroup);
-    }
 
-    private void loadNavigationGroups() {
-        mSelectNv.getMenu().removeGroup(R.id.all_groups);
-        int i;
-        for (i = 0; i < mGroups.size(); i++) {
-            if (mGroups.get(i).getId() == 1) {
-                mSelectNv.getMenu().add(R.id.all_groups, mGroups.get(i).getId(), 1, mGroups.get(i).getName());
-            } else {
-                mSelectNv.getMenu().add(R.id.all_groups, mGroups.get(i).getId(), 2, mGroups.get(i).getName());
-            }
-            mSelectNv.getMenu().getItem(i).setIcon(R.mipmap.unclassified);
-        }
-        if (i == mGroups.size()) {
-            mSelectNv.getMenu().getItem(i).setIcon(R.mipmap.unclassified);
-        }
-    }
+    //about Toolbar==================================================================
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -179,6 +169,24 @@ public class MainActivity extends AppCompatActivity implements IMainView,
     }
 
     @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.d(TAG, "onQueryTextSubmit: " + query);
+        mPresenter.queryByTitle(mCurGroup.getId(), query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Log.d(TAG, "onQueryTextChange: " + newText);
+        if (TextUtils.isEmpty(newText)) {
+            mPresenter.loadStoreNotes();
+        }
+        return false;
+    }
+
+    //navigation view=========================================================================
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id ==  R.id.manage_groups){
@@ -189,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements IMainView,
             Group group = new Group();
             group.setId(item.getItemId());
             group.setName(item.getTitle().toString());
-            mPresenter.getNotes(group);
+            mPresenter.loadNotesByGroup(group);
             //更新标题
             mCurGroup = group;
             mTopToolbar.setTitle(group.getName());
@@ -200,22 +208,29 @@ public class MainActivity extends AppCompatActivity implements IMainView,
         return false;
     }
 
-    @Override
-    public Context getAppContext() {
-        return getApplicationContext();
+    private void loadNavigationGroups() {
+        mSelectNv.getMenu().removeGroup(R.id.all_groups);
+        int i;
+        for (i = 0; i < mGroups.size(); i++) {
+            if (mGroups.get(i).getId() == 1) {
+                mSelectNv.getMenu().add(R.id.all_groups, mGroups.get(i).getId(), 1, mGroups.get(i).getName());
+            } else {
+                mSelectNv.getMenu().add(R.id.all_groups, mGroups.get(i).getId(), 2, mGroups.get(i).getName());
+            }
+            mSelectNv.getMenu().getItem(i).setIcon(R.mipmap.unclassified);
+        }
+        if (i == mGroups.size()) {
+            mSelectNv.getMenu().getItem(i).setIcon(R.mipmap.unclassified);
+        }
     }
 
-    @Override
-    public void setAdapter(NoteAdapter adapter) {
-        mNoteListRv.setAdapter(adapter);
-        adapter.setOnItemClickListener(this);
-    }
+    //recyclerView click==============================================================
 
     @Override
     public void onItemClick(View view, int position) {
         Log.d(TAG, "click " + position);
         Intent intent = new Intent(this, AddNoteActivity.class);
-        Note note = mPresenter.getNote(position);
+        Note note = mPresenter.loadNoteByIndex(position);
         intent.putExtra(NotebookDBOpenHelper.GROUP_ID, mCurGroup.getId());
         intent.putExtra(NotebookDBOpenHelper.NOTE_ID, note.getId());
         startActivityForResult(intent, FROM_ADD);
@@ -251,19 +266,15 @@ public class MainActivity extends AppCompatActivity implements IMainView,
         builder.create().show();
     }
 
+    //implement IView======================================================================
     @Override
-    public boolean onQueryTextSubmit(String query) {
-        Log.d(TAG, "onQueryTextSubmit: " + query);
-        mPresenter.queryByTitle(mCurGroup.getId(), query);
-        return false;
+    public Context getAppContext() {
+        return getApplicationContext();
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
-        Log.d(TAG, "onQueryTextChange: " + newText);
-        if (TextUtils.isEmpty(newText)) {
-            refreshView();
-        }
-        return false;
+    public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
+        mNoteListRv.setAdapter(adapter);
+        ((NoteAdapter)adapter).setOnItemClickListener(this);
     }
 }

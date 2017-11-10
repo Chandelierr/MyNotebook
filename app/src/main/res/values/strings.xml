@@ -22,4 +22,9 @@
     <string name="find">查找</string>
     <string name="please_input_group_name">请输入要添加的组名</string>
     <string name="group_name">组名</string>
+    <string name="toast_bold">粗体</string>
+    <string name="toast_italic">斜体</string>
+    <string name="toast_underline">下划线</string>
+    <string name="toast_strike_through">删除线</string>
+    <string name="can_not_delete_default_group">不能删除默认分组</string>
 </resources>

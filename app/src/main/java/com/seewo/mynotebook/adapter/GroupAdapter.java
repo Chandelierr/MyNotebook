@@ -50,6 +50,11 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         dealClickEvent(holder);
     }
 
+    @Override
+    public int getItemCount() {
+        return mGroups != null ? mGroups.size() : 0;
+    }
+
     private void dealClickEvent(final RecyclerView.ViewHolder holder) {
         if (mClickListener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -72,10 +77,5 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public void setOnItemClickListener(NoteAdapter.OnItemClickListener listener) {
         mClickListener = listener;
-    }
-
-    @Override
-    public int getItemCount() {
-        return mGroups != null ? mGroups.size() : 0;
     }
 }

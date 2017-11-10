@@ -16,7 +16,6 @@ public class NotebookDBOpenHelper extends SQLiteOpenHelper{
     private static final String TAG = "NotebookDBOpenHelper";
     public static final String NOTE_TABLE = "note_table";
     public static final String NOTE_ID = "note_id";
-    //public static final String NOTE_GROUP_NAME = "note_group_name";
     public static final String NOTE_TITLE_NAME = "title_name";
     public static final String NOTE_TIME = "time";
     public static final String NOTE_CONTENT = "content";
@@ -24,7 +23,6 @@ public class NotebookDBOpenHelper extends SQLiteOpenHelper{
     public static final String GROUP_TABLE = "group_table";
     public static final String GROUP_ID = "group_id";
     public static final String GROUP_NAME = "group_name";
-    //public static final String GROUP_CONTAINS_COUNT = "contains_count";
 
     public static final String GROUP_NOTE_TABLE = "group_note_table";
     public static final String GROUP_NOTE_ID = "group_note_id";
@@ -40,15 +38,12 @@ public class NotebookDBOpenHelper extends SQLiteOpenHelper{
         Log.d(TAG, "create table.");
         db.execSQL("create table " + NOTE_TABLE +
                 " (" + NOTE_ID + " integer primary key autoincrement, " +
-                //NOTE_GROUP_NAME + " text, " +
                 NOTE_TITLE_NAME + " text, " +
                 NOTE_CONTENT + " text, " +
                 NOTE_TIME + " text not null)");
         db.execSQL("create table " + GROUP_TABLE +
                 " (" + GROUP_ID + " integer primary key autoincrement, " +
                 GROUP_NAME + " text unique)");
-//                GROUP_NAME + " text, " +
-//                GROUP_CONTAINS_COUNT + " integer)");
         db.execSQL("create table " + GROUP_NOTE_TABLE +
                 " (" + GROUP_NOTE_ID + " integer primary key autoincrement, " +
                 GROUP_MAP_ID + " integer, " +

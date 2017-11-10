@@ -93,6 +93,11 @@ public class NoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    @Override
+    public int getItemCount() {
+        return mNotes != null ? mNotes.size():0;
+    }
+
     private void computeViewHeightAndWidth(RecyclerView.ViewHolder holder) {
         if (SCREEN_WIDTH == -1) {
             WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
@@ -102,11 +107,6 @@ public class NoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         lp.height = (int)(Math.random() * 300) + 50 * 3;
         lp.width = SCREEN_WIDTH / 3;
         ((myViewHolder)holder).content.setLayoutParams(lp);
-    }
-
-    @Override
-    public int getItemCount() {
-        return mNotes != null ? mNotes.size():0;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
